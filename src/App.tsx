@@ -24,12 +24,12 @@ export default function App() {
 
           <Route
             path="/favorites"
-            element={<h1>Bài hát yêu thích — Phần 2</h1>}
+            element={<h1>Bài hát yêu thích</h1>}
           />
 
           <Route
             path="/playlists"
-            element={<h1>Danh sách playlist — Phần 3</h1>}
+            element={<h1>Danh sách playlist</h1>}
           />
 
           <Route
