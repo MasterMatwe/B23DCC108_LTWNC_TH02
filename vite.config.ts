@@ -5,6 +5,9 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
-    coverage: { include: ['src/features/**', 'src/utils/**'] },
+    coverage: {
+      include: ['src/features/**', 'src/utils/**'],
+      thresholds: { lines: 70 },
+    },
   },
 });
