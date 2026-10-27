@@ -7,6 +7,10 @@ import { GENRES, SONGS } from '../../data/songs';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { Genre, Song } from '../../types';
 import { usePlayerStore } from '../player/usePlayerStore';
+import {
+  usePlaylistDispatch,
+  usePlaylists,
+} from '../playlists/PlaylistContext';
 import SongRow from './SongRow';
 
 type GenreFilter = Genre | 'all';
@@ -16,6 +20,8 @@ interface RowData {
   songs: Song[];
   onPlay: (song: Song) => void;
   onAddToQueue: (song: Song) => void;
+  onAddToPlaylist: (song: Song) => void;
+  canAddToPlaylist: boolean;
 }
 
 function VirtualRow({
@@ -30,6 +36,8 @@ function VirtualRow({
         index={index}
         onPlay={data.onPlay}
         onAddToQueue={data.onAddToQueue}
+        onAddToPlaylist={data.onAddToPlaylist}
+        canAddToPlaylist={data.canAddToPlaylist}
       />
     </div>
   );
@@ -43,11 +51,21 @@ export default function LibraryPage() {
   const [query, setQuery] = useState('');
   const [genre, setGenre] = useState<GenreFilter>('all');
   const [sort, setSort] = useState<SortOption>('default');
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState('');
 
   const debouncedQuery = useDebounce(query, 300);
 
+  const playlists = usePlaylists();
+  const dispatch = usePlaylistDispatch();
+
   const playQueue = usePlayerStore((state) => state.playQueue);
   const addToQueue = usePlayerStore((state) => state.addToQueue);
+
+  const activePlaylistId = playlists.some(
+    (playlist) => playlist.id === selectedPlaylistId,
+  )
+    ? selectedPlaylistId
+    : playlists[0]?.id ?? '';
 
   const handleQueryChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -101,13 +119,36 @@ export default function LibraryPage() {
     [addToQueue],
   );
 
+  const handleAddToPlaylist = useCallback(
+    (song: Song) => {
+      if (!activePlaylistId) {
+        return;
+      }
+
+      dispatch({
+        type: 'addSong',
+        id: activePlaylistId,
+        songId: song.id,
+      });
+    },
+    [activePlaylistId, dispatch],
+  );
+
   const itemData = useMemo<RowData>(
     () => ({
       songs: filteredSongs,
       onPlay: handlePlay,
       onAddToQueue: handleAddToQueue,
+      onAddToPlaylist: handleAddToPlaylist,
+      canAddToPlaylist: activePlaylistId !== '',
     }),
-    [filteredSongs, handlePlay, handleAddToQueue],
+    [
+      filteredSongs,
+      handlePlay,
+      handleAddToQueue,
+      handleAddToPlaylist,
+      activePlaylistId,
+    ],
   );
 
   return (
@@ -154,6 +195,27 @@ export default function LibraryPage() {
             <option value="default">Mặc định</option>
             <option value="title">Tên A–Z</option>
             <option value="duration">Thời lượng tăng dần</option>
+          </select>
+        </label>
+
+        <label>
+          Playlist đang chọn
+          <select
+            value={activePlaylistId}
+            disabled={playlists.length === 0}
+            onChange={(event) =>
+              setSelectedPlaylistId(event.target.value)
+            }
+          >
+            {playlists.length === 0 && (
+              <option value="">Chưa có playlist</option>
+            )}
+
+            {playlists.map((playlist) => (
+              <option key={playlist.id} value={playlist.id}>
+                {playlist.name}
+              </option>
+            ))}
           </select>
         </label>
       </div>

@@ -1,13 +1,16 @@
 import { memo } from 'react';
+
 import type { Song } from '../../types';
 import { formatDuration } from '../../utils/format';
-import { useFavoritesStore } from '../favourites/useFavoritesStore';
+import { useFavoritesStore } from '../favorites/useFavoritesStore';
 
 interface SongRowProps {
   song: Song;
   index: number;
   onPlay: (song: Song) => void;
   onAddToQueue: (song: Song) => void;
+  onAddToPlaylist?: (song: Song) => void;
+  canAddToPlaylist?: boolean;
 }
 
 function SongRow({
@@ -15,6 +18,8 @@ function SongRow({
   index,
   onPlay,
   onAddToQueue,
+  onAddToPlaylist,
+  canAddToPlaylist = false,
 }: SongRowProps) {
   const isFavorite = useFavoritesStore(
     (state) => state.ids.includes(song.id),
@@ -56,6 +61,16 @@ function SongRow({
         >
           + Hàng đợi
         </button>
+
+        {onAddToPlaylist && (
+          <button
+            type="button"
+            disabled={!canAddToPlaylist}
+            onClick={() => onAddToPlaylist(song)}
+          >
+            + Playlist
+          </button>
+        )}
       </div>
     </div>
   );
