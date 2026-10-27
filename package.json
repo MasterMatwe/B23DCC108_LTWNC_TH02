@@ -14,7 +14,9 @@
     "react-dom": "^19.3.1",
     "react-router-dom": "^6.30.6",
     "react-window": "^1.8.11",
-    "zustand": "^5.0.16"
+    "zustand": "^5.0.16",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -37,7 +39,5 @@
     "typescript-eslint": "^8.71.2",
     "vite": "^8.3.4",
     "vitest": "^5.0.5"
-  },
-    "test": "vitest run",
-    "coverage": "vitest run --coverage"
+  }
 }
