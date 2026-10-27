@@ -6,6 +6,7 @@ import type { ListChildComponentProps } from 'react-window';
 import { GENRES, SONGS } from '../../data/songs';
 import { useDebounce } from '../../hooks/useDebounce';
 import type { Genre, Song } from '../../types';
+import { usePlayerStore } from '../player/usePlayerStore';
 import SongRow from './SongRow';
 
 type GenreFilter = Genre | 'all';
@@ -14,6 +15,7 @@ type SortOption = 'default' | 'title' | 'duration';
 interface RowData {
   songs: Song[];
   onPlay: (song: Song) => void;
+  onAddToQueue: (song: Song) => void;
 }
 
 function VirtualRow({
@@ -27,6 +29,7 @@ function VirtualRow({
         song={data.songs[index]}
         index={index}
         onPlay={data.onPlay}
+        onAddToQueue={data.onAddToQueue}
       />
     </div>
   );
@@ -43,17 +46,15 @@ export default function LibraryPage() {
 
   const debouncedQuery = useDebounce(query, 300);
 
+  const playQueue = usePlayerStore((state) => state.playQueue);
+  const addToQueue = usePlayerStore((state) => state.addToQueue);
+
   const handleQueryChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value);
     },
     [],
   );
-
-  const handlePlay = useCallback((song: Song) => {
-    // Phần 2 sẽ thay bằng action playQueue của Zustand.
-    console.log('Bài hát được chọn phát:', song);
-  }, []);
 
   const filteredSongs = useMemo(() => {
     const keyword = debouncedQuery.trim().toLowerCase();
@@ -82,12 +83,31 @@ export default function LibraryPage() {
     return result;
   }, [debouncedQuery, genre, sort]);
 
+  const handlePlay = useCallback(
+    (song: Song) => {
+      const startIndex = filteredSongs.findIndex(
+        (item) => item.id === song.id,
+      );
+
+      playQueue(filteredSongs, startIndex);
+    },
+    [filteredSongs, playQueue],
+  );
+
+  const handleAddToQueue = useCallback(
+    (song: Song) => {
+      addToQueue(song);
+    },
+    [addToQueue],
+  );
+
   const itemData = useMemo<RowData>(
     () => ({
       songs: filteredSongs,
       onPlay: handlePlay,
+      onAddToQueue: handleAddToQueue,
     }),
-    [filteredSongs, handlePlay],
+    [filteredSongs, handlePlay, handleAddToQueue],
   );
 
   return (

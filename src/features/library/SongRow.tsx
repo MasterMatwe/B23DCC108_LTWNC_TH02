@@ -1,14 +1,27 @@
 import { memo } from 'react';
 import type { Song } from '../../types';
 import { formatDuration } from '../../utils/format';
+import { useFavoritesStore } from '../favourites/useFavoritesStore';
 
 interface SongRowProps {
   song: Song;
   index: number;
   onPlay: (song: Song) => void;
+  onAddToQueue: (song: Song) => void;
 }
 
-function SongRow({ song, index, onPlay }: SongRowProps) {
+function SongRow({
+  song,
+  index,
+  onPlay,
+  onAddToQueue,
+}: SongRowProps) {
+  const isFavorite = useFavoritesStore(
+    (state) => state.ids.includes(song.id),
+  );
+
+  const toggleFavorite = useFavoritesStore((state) => state.toggle);
+
   return (
     <div className="song-row">
       <span>{index + 1}</span>
@@ -28,17 +41,18 @@ function SongRow({ song, index, onPlay }: SongRowProps) {
 
         <button
           type="button"
-          aria-label="Thêm vào yêu thích"
-          title="Chức năng ở Phần 2"
-          disabled
+          onClick={() => toggleFavorite(song.id)}
+          aria-label={
+            isFavorite ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'
+          }
+          aria-pressed={isFavorite}
         >
-          ♡
+          {isFavorite ? '♥' : '♡'}
         </button>
 
         <button
           type="button"
-          title="Chức năng ở Phần 2"
-          disabled
+          onClick={() => onAddToQueue(song)}
         >
           + Hàng đợi
         </button>

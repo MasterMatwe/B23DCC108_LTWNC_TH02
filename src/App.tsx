@@ -1,5 +1,7 @@
 import { NavLink, Route, Routes } from 'react-router-dom';
+import FavoritesPage from './features/favourites/FavoritesPage';
 import LibraryPage from './features/library/LibraryPage';
+import PlayerBar from './features/player/PlayerBar';
 
 export default function App() {
   return (
@@ -24,7 +26,7 @@ export default function App() {
 
           <Route
             path="/favorites"
-            element={<h1>Bài hát yêu thích</h1>}
+            element={<FavoritesPage />}
           />
 
           <Route
@@ -34,10 +36,12 @@ export default function App() {
 
           <Route
             path="/playlists/:id"
-            element={<h1>Chi tiết playlist — Phần 3</h1>}
+            element={<h1>Chi tiết playlist</h1>}
           />
         </Routes>
       </main>
+
+      <PlayerBar />
     </>
   );
 }

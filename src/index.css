@@ -119,3 +119,67 @@ button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+body {
+  padding-bottom: 190px;
+}
+
+.player-bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 16px 24px;
+  color: white;
+  background: #222;
+  border-top: 1px solid #555;
+}
+
+.player-bar p {
+  margin: 0 0 8px;
+}
+
+.player-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.player-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 260px;
+  max-width: 100%;
+}
+
+.player-progress progress {
+  width: 100%;
+  accent-color: #7293ff;
+}
+
+.song-actions button[aria-pressed="true"] {
+  color: #d62850;
+}
+
+@media (max-width: 700px) {
+  body {
+    padding-bottom: 260px;
+  }
+
+  .player-bar {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .player-progress {
+    width: 100%;
+  }
+}
